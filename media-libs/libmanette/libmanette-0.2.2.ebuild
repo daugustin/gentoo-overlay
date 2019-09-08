@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit gnome2-utils meson vala
+inherit meson vala
 
 DESCRIPTION="A simple GObject game controller library"
 HOMEPAGE="https://gitlab.gnome.org/aplazas/libmanette"

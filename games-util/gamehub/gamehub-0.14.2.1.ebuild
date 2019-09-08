@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit meson vala
+inherit gnome2-utils meson vala
 
 MY_PV="0.14.2-1-master"
 
