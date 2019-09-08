@@ -22,8 +22,22 @@ BDEPEND="$(vala_depend)"
 
 S="${WORKDIR}/GameHub-${MY_PV}"
 
+pkg_preinst(){
+	gnome2_schemas_savelist
+}
+
 src_prepare() {
 	vala_src_prepare
 
 	default
+}
+
+pkg_postinst(){
+	gnome2_schemas_update
+	xdg_icon_cache_update
+}
+
+pkg_postrm(){
+	gnome2_schemas_update
+	xdg_icon_cache_update
 }
