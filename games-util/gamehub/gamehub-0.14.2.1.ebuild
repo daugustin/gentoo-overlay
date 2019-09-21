@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit gnome2-utils meson vala
+inherit flag-o-matic gnome2-utils meson vala
 
 MY_PV="0.14.2-1-master"
 
@@ -16,7 +16,10 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
 
-DEPEND="x11-libs/gtk+:3"
+DEPEND="dev-libs/libgee:0.8
+	net-libs/webkit-gtk:4
+	sys-auth/polkit[introspection]
+	x11-libs/gtk+:3"
 RDEPEND="${DEPEND}"
 BDEPEND="$(vala_depend)"
 
@@ -28,6 +31,9 @@ pkg_preinst(){
 
 src_prepare() {
 	vala_src_prepare
+
+	# https://github.com/tkashkin/GameHub/issues/162
+	filter-flags -O1 -O2 -O3
 
 	default
 }
