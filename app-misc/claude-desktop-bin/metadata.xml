@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>hossie@hossie.de</email>
+		<name>Daniel Augustin</name>
+	</maintainer>
+	<longdescription>
+		Claude Desktop is the official desktop application for Claude,
+		an AI assistant by Anthropic. This binary package repackages
+		the Debian package from the claude-desktop-debian community project.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">aaddrick/claude-desktop-debian</remote-id>
+	</upstream>
+</pkgmetadata>
