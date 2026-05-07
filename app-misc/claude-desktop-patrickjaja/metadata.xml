@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>hossie@hossie.de</email>
+		<name>Daniel Augustin</name>
+	</maintainer>
+	<longdescription>
+		Claude Desktop is the official desktop application for Claude,
+		an AI assistant by Anthropic. This binary package repackages
+		the official Linux build maintained by the upstream community.
+	</longdescription>
+	<use>
+		<flag name="gnome-screenshot">Use <pkg>gnome-extra/gnome-screenshot</pkg> as a Computer Use screenshot fallback on GNOME</flag>
+		<flag name="grim">Enable Computer Use screenshots on wlroots-based Wayland compositors (Sway, Hyprland) via <pkg>gui-apps/grim</pkg></flag>
+		<flag name="hyprland">Enable Quick Entry cursor positioning on Hyprland via <pkg>gui-wm/hyprland</pkg> (hyprctl)</flag>
+		<flag name="imagemagick">Enable Computer Use screenshot fallback and image cropping via <pkg>media-gfx/imagemagick</pkg></flag>
+		<flag name="jq">Enable Computer Use window queries on Sway via <pkg>app-misc/jq</pkg></flag>
+		<flag name="nodejs">Pull in <pkg>net-libs/nodejs</pkg> for MCP extensions that require specific Node.js versions (Electron bundles Node.js as a fallback)</flag>
+		<flag name="pipewire">Enable Portal screenshot PipeWire frame capture on GNOME Wayland 46+ via <pkg>media-plugins/gst-plugins-pipewire</pkg></flag>
+		<flag name="pygobject">Enable Portal screenshots on GNOME Wayland 46+ without repeated permission dialogs via <pkg>dev-python/pygobject</pkg></flag>
+		<flag name="scrot">Enable Computer Use screenshots on X11 via <pkg>media-gfx/scrot</pkg></flag>
+		<flag name="socat">Enable faster Quick Entry toggle via socket using <pkg>net-misc/socat</pkg></flag>
+		<flag name="spectacle">Enable Computer Use screenshots on KDE Plasma Wayland via <pkg>kde-apps/spectacle</pkg></flag>
+		<flag name="wmctrl">Detect running applications on X11 via <pkg>x11-misc/wmctrl</pkg> for Computer Use</flag>
+		<flag name="xdotool">Enable X11 Computer Use input, cursor reading, and Quick Entry positioning via <pkg>x11-misc/xdotool</pkg></flag>
+		<flag name="ydotool">Enable Computer Use input automation on all Wayland compositors via <pkg>x11-misc/ydotool</pkg> (requires ydotoold daemon running)</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">patrickjaja/claude-desktop-bin</remote-id>
+	</upstream>
+</pkgmetadata>
