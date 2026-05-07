@@ -8,7 +8,7 @@ inherit desktop xdg-utils
 DESCRIPTION="Claude AI Desktop Application (unofficial repackage of official binary)"
 HOMEPAGE="https://claude.ai https://github.com/patrickjaja/claude-desktop-bin"
 
-ELECTRON_VER=41.3.0
+ELECTRON_VER=41.5.0
 MY_PV=$(ver_cut 1-3)
 MY_PR=$(ver_cut 5)
 MY_PN=claude-desktop-bin
