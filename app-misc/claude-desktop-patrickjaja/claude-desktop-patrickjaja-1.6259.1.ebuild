@@ -16,34 +16,34 @@ SRC_URI="
 		https://github.com/electron/electron/releases/download/v${ELECTRON_VER}/electron-v${ELECTRON_VER}-linux-x64.zip
 "
 
+S="${WORKDIR}"
+
 LICENSE="Anthropic-TOS"
 SLOT="0"
 KEYWORDS="~amd64"
 
-IUSE="claude-code claude-cowork gnome wayland X"
+IUSE="claude-code gnome wayland X"
 
 RESTRICT="bindist mirror strip"
 QA_PREBUILT="usr/lib/${MY_PN}/*"
 
 BDEPEND="app-arch/unzip"
 RDEPEND="
-  !app-misc/claude-code-aaddrick
-  claude-code? ( dev-util/claude-code )
-  wayland? (
-    gnome? ( gnome-extra/gnome-screenshot )
-    x11-misc/ydotool
-  )
-  X? (
-    media-gfx/scrot
-    x11-misc/wmctrl
-    x11-misc/xdotool
-  )
-  media-gfx/imagemagick
-  net-libs/nodejs
-  net-misc/socat
+	!app-misc/claude-desktop-aaddrick
+	claude-code? ( dev-util/claude-code )
+	wayland? (
+		gnome? ( media-gfx/gnome-screenshot )
+		x11-misc/ydotool
+	)
+	X? (
+		media-gfx/scrot
+		x11-misc/wmctrl
+		x11-misc/xdotool
+	)
+	media-gfx/imagemagick
+	net-libs/nodejs
+	net-misc/socat
 "
-
-S="${WORKDIR}"
 
 src_unpack() {
 	unpack ${MY_PN}-${PV}-linux.tar.gz
