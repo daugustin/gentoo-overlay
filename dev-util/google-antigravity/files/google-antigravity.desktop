@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Antigravity
+GenericName=Agentic Desktop Application
+Comment=Antigravity by Google - Agentic Desktop Application
+Exec=antigravity %U
+Icon=google-antigravity
+Type=Application
+Terminal=false
+Categories=Development;IDE;
+StartupNotify=true
+StartupWMClass=antigravity
