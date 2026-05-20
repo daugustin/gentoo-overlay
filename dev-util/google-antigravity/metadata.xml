@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>hossie@hossie.de</email>
+		<name>Daniel Augustin</name>
+	</maintainer>
+	<longdescription>
+		Antigravity is Google's agentic desktop application, an Electron-based
+		environment hosting Google's coding agents alongside a bundled language
+		server. This package installs the upstream prebuilt Linux x64 binary
+		tarball from Google's antigravity-hub distribution channel.
+	</longdescription>
+</pkgmetadata>

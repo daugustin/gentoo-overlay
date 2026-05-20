@@ -1,0 +1,14 @@
+Antigravity by Google is proprietary software distributed by Google LLC.
+
+Use of the Antigravity desktop application is governed by Google's Terms
+of Service and the Antigravity-specific terms available at:
+
+    https://antigravity.google
+
+The redistributed binary bundle also includes Electron (MIT-licensed) and
+Chromium components, whose licenses are reproduced in
+LICENSE.electron.txt and LICENSES.chromium.html respectively, shipped
+alongside the binary.
+
+By installing this package you accept Google's Terms of Service for
+Antigravity.
