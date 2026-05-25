@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>hossie@hossie.de</email>
+		<name>Daniel Augustin</name>
+	</maintainer>
+	<longdescription>
+		Native Linux backend daemon that implements Anthropic's Cowork feature
+		for Claude Desktop. Reverse-engineers the Windows cowork-svc.exe binary
+		and exposes the RPC protocol over a Unix socket so the Linux Claude
+		Desktop frontend (and Claude Code CLI) can use Cowork. Ships both a
+		systemd user unit and an OpenRC init script.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">patrickjaja/claude-cowork-service</remote-id>
+	</upstream>
+</pkgmetadata>
