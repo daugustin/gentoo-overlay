@@ -22,7 +22,7 @@ LICENSE="Anthropic-TOS"
 SLOT="0"
 KEYWORDS="~amd64"
 
-IUSE="claude-code gnome wayland X"
+IUSE="claude-code cowork gnome wayland X"
 
 RESTRICT="bindist mirror strip"
 QA_PREBUILT="usr/lib/${MY_PN}/*"
@@ -31,6 +31,7 @@ BDEPEND="app-arch/unzip"
 RDEPEND="
 	!app-misc/claude-desktop-aaddrick
 	claude-code? ( dev-util/claude-code )
+	cowork? ( app-misc/claude-cowork-service )
 	wayland? (
 		gnome? ( media-gfx/gnome-screenshot )
 		x11-misc/ydotool
