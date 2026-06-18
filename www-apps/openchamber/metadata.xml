@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>hossie@hossie.de</email>
+		<name>Daniel Augustin</name>
+	</maintainer>
+	<longdescription>
+		OpenChamber is a web/desktop UI front-end for the OpenCode AI coding
+		agent. This package ships the @openchamber/web component: the
+		'openchamber' CLI plus an Express server that serves the built web UI.
+		It runs on plain net-libs/nodejs (Bun is only used upstream as the
+		package manager/build tool). The dependency tree is vendored and the
+		web UI is pre-built into a self-contained tarball; the only thing built
+		on the user's machine is the better-sqlite3 native addon, rebuilt
+		against the local nodejs. The Electron and VS Code components are out
+		of scope. The 'opencode' CLI it drives is pulled in at runtime
+		via dev-util/opencode-bin.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">openchamber/openchamber</remote-id>
+	</upstream>
+</pkgmetadata>

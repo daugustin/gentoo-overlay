@@ -1,0 +1,17 @@
+[Unit]
+Description=OpenChamber web UI for the OpenCode AI coding agent
+Documentation=https://github.com/openchamber/openchamber
+
+[Service]
+Type=simple
+# --foreground keeps the server attached so systemd can supervise it.
+ExecStart=/usr/bin/openchamber serve --foreground
+Restart=on-failure
+RestartSec=5
+
+# Optional settings (OPENCHAMBER_UI_PASSWORD, OPENCODE_HOST to use an external
+# OpenCode server, extra PATH entries, ...) can go in this file:
+EnvironmentFile=-%h/.config/openchamber/env
+
+[Install]
+WantedBy=default.target
