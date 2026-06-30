@@ -21,6 +21,8 @@ QA_PREBUILT="usr/lib/claude-desktop/*"
 
 BDEPEND="app-arch/zstd"
 
+RDEPEND="!app-misc/claude-desktop-official"
+
 S="${WORKDIR}"
 
 src_install() {
