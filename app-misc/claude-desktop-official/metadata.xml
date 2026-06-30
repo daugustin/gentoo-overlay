@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>hossie@hossie.de</email>
+		<name>Daniel Augustin</name>
+	</maintainer>
+	<longdescription>
+		Claude Desktop is the official desktop application for Claude,
+		an AI assistant by Anthropic. This package installs the official
+		amd64 .deb published by Anthropic at downloads.claude.ai.
+	</longdescription>
+	<use>
+		<flag name="claude-code">Pull in <pkg>dev-util/claude-code</pkg> so the bundled Claude Code integration can spawn the CLI</flag>
+		<flag name="cowork">Pull in <pkg>app-emulation/qemu</pkg> and <pkg>app-emulation/virtiofsd</pkg> so Claude Desktop's Cowork feature can boot its sandbox microVM</flag>
+	</use>
+</pkgmetadata>

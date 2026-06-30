@@ -30,6 +30,7 @@ QA_PREBUILT="usr/lib/${MY_PN}/*"
 BDEPEND="app-arch/unzip"
 RDEPEND="
 	!app-misc/claude-desktop-aaddrick
+	!app-misc/claude-desktop-official
 	claude-code? ( dev-util/claude-code )
 	cowork? ( app-misc/claude-cowork-service )
 	wayland? (
