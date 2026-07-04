@@ -12,7 +12,7 @@
 	</longdescription>
 	<use>
 		<flag name="claude-code">Pull in <pkg>dev-util/claude-code</pkg> so the bundled Claude Code integration can spawn the CLI</flag>
-		<flag name="cowork">Pull in <pkg>app-misc/claude-cowork-service</pkg> so the Cowork backend daemon is available for Claude Desktop's Cowork feature</flag>
+		<flag name="cowork">Pull in <pkg>app-emulation/qemu</pkg> and <pkg>app-emulation/virtiofsd</pkg> so Claude Desktop's Cowork feature can boot its sandbox microVM</flag>
 		<flag name="gnome">On Wayland sessions, add <pkg>media-gfx/gnome-screenshot</pkg> for Computer Use screenshots under GNOME</flag>
 		<flag name="wayland">Add <pkg>x11-misc/ydotool</pkg> for Computer Use input automation on Wayland (requires ydotoold daemon running)</flag>
 		<flag name="X">Add <pkg>media-gfx/scrot</pkg>, <pkg>x11-misc/wmctrl</pkg>, and <pkg>x11-misc/xdotool</pkg> for Computer Use screenshots, window detection, and input on X11</flag>
