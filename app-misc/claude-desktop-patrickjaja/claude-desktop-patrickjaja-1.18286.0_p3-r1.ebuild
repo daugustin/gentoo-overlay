@@ -55,6 +55,30 @@ RDEPEND="
 	net-misc/socat
 "
 
+src_prepare() {
+	default
+
+	# Both upstream's launcher diagnostics and its patched firmware probe
+	# list in app.asar honor CLAUDE_OVMF_CODE_PATH as the first OVMF
+	# candidate, but the built-in list only covers the Debian, Fedora and
+	# Arch locations. Gentoo ships the firmware via sys-firmware/edk2-bin
+	# (pulled in by qemu) under /usr/share/edk2/OvmfX64/, so seed the
+	# documented override in the launcher instead of installing compat
+	# symlinks under /usr/share/OVMF/. The variable-store template is
+	# derived from the CODE path by replacing OVMF_CODE with OVMF_VARS,
+	# which resolves within the same directory. virtiofsd needs no
+	# override: Gentoo's /usr/libexec/virtiofsd is already probed.
+	[[ $(grep -c '^set -euo pipefail$' launcher/claude-desktop) -eq 1 ]] \
+		|| die "launcher injection anchor not found exactly once"
+	sed -i '/^set -euo pipefail$/a\
+\
+# Gentoo: default the Cowork firmware probe to the sys-firmware/edk2-bin\
+# OVMF location, which the built-in probe list does not cover.\
+: "${CLAUDE_OVMF_CODE_PATH:=/usr/share/edk2/OvmfX64/OVMF_CODE.fd}"\
+export CLAUDE_OVMF_CODE_PATH' launcher/claude-desktop \
+		|| die "failed to patch launcher"
+}
+
 src_install() {
 	local destdir="/usr/lib/${MY_PN}"
 
@@ -91,21 +115,11 @@ src_install() {
 
 	dodoc "${S}/copyright"
 
-	if use cowork; then
-		# Cowork's VM launcher probes the Debian, Fedora and Arch OVMF
-		# locations (e.g. /usr/share/OVMF/OVMF_CODE{,_4M}.fd) and derives the
-		# matching variable-store template by replacing OVMF_CODE with
-		# OVMF_VARS in that path. Gentoo ships the raw firmware via
-		# sys-firmware/edk2-bin (pulled in by qemu) under
-		# /usr/share/edk2/OvmfX64/, which is not in the probe list, so bridge
-		# the two with compat symlinks at the Debian path Cowork expects.
-		dosym ../edk2/OvmfX64/OVMF_CODE.fd /usr/share/OVMF/OVMF_CODE.fd
-		dosym ../edk2/OvmfX64/OVMF_VARS.fd /usr/share/OVMF/OVMF_VARS.fd
-
-		# Note: the tarball bundles a virtiofsd under resources/locales/, but
-		# the app only uses it on Ubuntu 22.x (os-release gate) -- on every
-		# other distro a system virtiofsd is required, hence the RDEPEND.
-	fi
+	# Note: with USE=cowork the tarball bundles a virtiofsd under
+	# resources/locales/, but the app only uses it on Ubuntu 22.x
+	# (os-release gate) -- on every other distro a system virtiofsd is
+	# required, hence the RDEPEND. The OVMF firmware is found via the
+	# CLAUDE_OVMF_CODE_PATH default seeded into the launcher above.
 }
 
 pkg_postinst() {

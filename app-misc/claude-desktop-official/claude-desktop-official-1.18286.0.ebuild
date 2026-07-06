@@ -33,6 +33,31 @@ RDEPEND="
 	)
 "
 
+src_prepare() {
+	default
+
+	# Cowork's bundled VM launcher only probes the Debian OVMF locations
+	# (/usr/share/OVMF/OVMF_CODE{_4M,}.fd) and derives the matching
+	# variable-store template by replacing OVMF_CODE with OVMF_VARS in
+	# that path. Gentoo ships the raw firmware via sys-firmware/edk2-bin
+	# (pulled in by qemu) under /usr/share/edk2/OvmfX64/, so rewrite the
+	# probe list inside app.asar to point there. The replacement is padded
+	# to the original length so the asar header's file offsets stay valid
+	# (in-array whitespace is valid JS; Electron's asar integrity fuse is
+	# not enforced on Linux, so the stale header hash is harmless).
+	local asar="usr/lib/${MY_PN}/resources/app.asar"
+	local old='"/usr/share/OVMF/OVMF_CODE_4M.fd","/usr/share/OVMF/OVMF_CODE.fd"'
+	local new='"/usr/share/edk2/OvmfX64/OVMF_CODE.fd"'
+	local pad=$(( ${#old} - ${#new} ))
+	(( pad >= 0 )) || die "OVMF replacement path longer than original probe list"
+	new+="$(printf '%*s' "${pad}" '')"
+
+	[[ $(LC_ALL=C grep -aoF -- "${old}" "${asar}" | wc -l) -eq 1 ]] \
+		|| die "OVMF probe list not found exactly once in app.asar"
+	LC_ALL=C sed -i "s|${old//./\\.}|${new}|" "${asar}" \
+		|| die "failed to patch OVMF probe list in app.asar"
+}
+
 src_install() {
 	local destdir="/usr/lib/${MY_PN}"
 
@@ -62,18 +87,6 @@ src_install() {
 	done
 
 	dodoc "usr/share/doc/${MY_PN}/copyright"
-
-	if use cowork; then
-		# Cowork's bundled VM launcher only probes the Debian OVMF
-		# locations (/usr/share/OVMF/OVMF_CODE{,_4M}.fd) and derives the
-		# matching variable-store template by replacing OVMF_CODE with
-		# OVMF_VARS in that path. Gentoo ships the raw firmware via
-		# sys-firmware/edk2-bin (pulled in by qemu) under
-		# /usr/share/edk2/OvmfX64/, so bridge the two with compat symlinks
-		# at the path Cowork expects.
-		dosym ../edk2/OvmfX64/OVMF_CODE.fd /usr/share/OVMF/OVMF_CODE.fd
-		dosym ../edk2/OvmfX64/OVMF_VARS.fd /usr/share/OVMF/OVMF_VARS.fd
-	fi
 }
 
 pkg_postinst() {
