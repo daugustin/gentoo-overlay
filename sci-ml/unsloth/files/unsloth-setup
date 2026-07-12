@@ -1,0 +1,5 @@
+#!/bin/sh
+# Bootstrap or update the per-user Unsloth Studio environment (~/.unsloth)
+# using the upstream installer shipped with sci-ml/unsloth. Run as your
+# regular user, not root.
+exec bash /usr/share/unsloth/install.sh "$@"
