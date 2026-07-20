@@ -13,9 +13,7 @@
 	<use>
 		<flag name="claude-code">Pull in <pkg>dev-util/claude-code</pkg> (only versions before 1.22209.3_p3; the app downloads its own checksum-verified CLI, a system binary is only honored via CLAUDE_CODE_LOCAL_BINARY)</flag>
 		<flag name="cowork">Pull in <pkg>app-emulation/qemu</pkg> and <pkg>app-emulation/virtiofsd</pkg> so Claude Desktop's Cowork feature can boot its sandbox microVM</flag>
-		<flag name="gnome">On Wayland sessions, add <pkg>media-gfx/gnome-screenshot</pkg> for Computer Use screenshots under GNOME (only versions before 1.18286.0_p3; later versions bundle gnome-portal-bridge)</flag>
 		<flag name="wayland">Add residual Computer Use fallbacks for Wayland sessions without a bundled bridge: <pkg>x11-misc/ydotool</pkg> for exotic compositors (requires ydotoold daemon running) and, from 1.18286.0_p3 on, <pkg>media-gfx/imagemagick</pkg> for KDE below Plasma 6.6</flag>
-		<flag name="X">Add <pkg>media-gfx/scrot</pkg>, <pkg>x11-misc/wmctrl</pkg>, and <pkg>x11-misc/xdotool</pkg> for Computer Use on X11 (only versions before 1.18286.0_p3; later versions bundle x11-bridge)</flag>
 	</use>
 	<upstream>
 		<remote-id type="github">patrickjaja/claude-desktop-bin</remote-id>
