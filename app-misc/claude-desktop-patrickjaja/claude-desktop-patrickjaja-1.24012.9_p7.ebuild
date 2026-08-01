@@ -48,6 +48,7 @@ QA_PREBUILT="usr/lib/${MY_PN}/*"
 # binary is only used via the opt-in CLAUDE_CODE_LOCAL_BINARY=/path/to/claude.
 RDEPEND="
 	!app-misc/claude-desktop-aaddrick
+	!app-misc/claude-desktop-extra
 	!app-misc/claude-desktop-official
 	cowork? (
 		app-emulation/qemu[qemu_softmmu_targets_x86_64]
