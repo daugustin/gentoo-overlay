@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>hossie@hossie.de</email>
+		<name>Daniel Augustin</name>
+	</maintainer>
+	<longdescription>
+		Claude Desktop is the official desktop application for Claude,
+		an AI assistant by Anthropic. This binary package repackages
+		the official Linux build maintained by the upstream community
+		project claude-desktop-extra (formerly claude-desktop-bin),
+		which adds Computer Use backends, custom themes, multi-profile
+		support and Quick Entry on top of the official build.
+	</longdescription>
+	<use>
+		<flag name="cowork">Pull in <pkg>app-emulation/qemu</pkg> and <pkg>app-emulation/virtiofsd</pkg> so Claude Desktop's Cowork feature can boot its sandbox microVM</flag>
+		<flag name="wayland">Add residual Computer Use fallbacks for Wayland sessions without a bundled bridge: <pkg>x11-misc/ydotool</pkg> for exotic compositors (requires ydotoold daemon running) and <pkg>media-gfx/imagemagick</pkg> for KDE below Plasma 6.6</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">patrickjaja/claude-desktop-extra</remote-id>
+	</upstream>
+</pkgmetadata>

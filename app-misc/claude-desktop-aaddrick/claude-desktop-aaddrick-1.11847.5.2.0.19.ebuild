@@ -21,7 +21,11 @@ QA_PREBUILT="usr/lib/claude-desktop/*"
 
 BDEPEND="app-arch/zstd"
 
-RDEPEND="!app-misc/claude-desktop-official"
+RDEPEND="
+	!app-misc/claude-desktop-extra
+	!app-misc/claude-desktop-official
+	!app-misc/claude-desktop-patrickjaja
+"
 
 S="${WORKDIR}"
 

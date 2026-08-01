@@ -3,19 +3,28 @@
 
 EAPI=8
 
-inherit desktop xdg-utils
+inherit desktop optfeature xdg-utils
 
-DESCRIPTION="Claude AI Desktop Application (unofficial repackage of official binary)"
-HOMEPAGE="https://claude.ai https://github.com/patrickjaja/claude-desktop-bin"
+DESCRIPTION="Claude AI Desktop with extra Linux features (unofficial repackage)"
+HOMEPAGE="https://claude.ai https://github.com/patrickjaja/claude-desktop-extra"
 
+MY_PV=$(ver_cut 1-3)
+MY_PR=$(ver_cut 5)
 MY_PN=claude-desktop
 
+# Upstream renamed the project from claude-desktop-bin to claude-desktop-extra
+# in v1.24012.9-8 (repository, packages and the ~/.config/Claude config file);
+# app-misc/claude-desktop-patrickjaja is its predecessor here. The old GitHub
+# repository is not a redirect -- it was recreated as a transitional mirror --
+# so releases are fetched from the new repository.
+#
 # Upstream repackages Anthropic's official Linux .deb: since v1.20186.1-2 the
 # tarball ships the official usr/lib/claude-desktop tree verbatim (bundled
 # Electron runtime included, patched app.asar at its stock resources/
 # location, entrypoint already renamed to "claude"), so no separate Electron
-# download is needed.
-SRC_URI="https://github.com/patrickjaja/claude-desktop-bin/releases/download/v${PV}/${MY_PN}-${PV}-linux.tar.gz"
+# download is needed. Patch releases reuse the tarball filename, so rename
+# the distfile to keep it unique per release tag.
+SRC_URI="https://github.com/patrickjaja/claude-desktop-extra/releases/download/v${MY_PV}-${MY_PR}/${MY_PN}-${MY_PV}-linux.tar.gz -> ${MY_PN}-${MY_PV}-${MY_PR}-linux.tar.gz"
 
 S="${WORKDIR}"
 
@@ -23,7 +32,7 @@ LICENSE="Anthropic-TOS"
 SLOT="0"
 KEYWORDS="~amd64"
 
-IUSE="claude-code cowork wayland"
+IUSE="cowork wayland"
 
 RESTRICT="bindist mirror strip"
 QA_PREBUILT="usr/lib/${MY_PN}/*"
@@ -40,11 +49,13 @@ QA_PREBUILT="usr/lib/${MY_PN}/*"
 # Residual soft deps: ydotool for exotic Wayland compositors only, and
 # imagemagick's convert alongside spectacle (shipped with KDE, not depended on
 # here) for KDE Wayland below Plasma 6.6.
+# No dev-util/claude-code dependency: the app downloads and checksum-verifies
+# its own Claude Code CLI matching the version it requires; a system claude
+# binary is only used via the opt-in CLAUDE_CODE_LOCAL_BINARY=/path/to/claude.
 RDEPEND="
 	!app-misc/claude-desktop-aaddrick
-	!app-misc/claude-desktop-extra
 	!app-misc/claude-desktop-official
-	claude-code? ( dev-util/claude-code )
+	!app-misc/claude-desktop-patrickjaja
 	cowork? (
 		app-emulation/qemu[qemu_softmmu_targets_x86_64]
 		app-emulation/virtiofsd
@@ -119,21 +130,17 @@ pkg_postinst() {
 	xdg_desktop_database_update
 	xdg_icon_cache_update
 
-	# Upstream aligned the app identity to the official build's
-	# com.anthropic.Claude in v1.21459.0 (we skipped that line, so the
-	# change lands with this version).
-	local ver
-	for ver in ${REPLACING_VERSIONS}; do
-		if ver_test "${ver}" -lt 1.21459.0; then
-			elog "The app identity changed from 'claude-desktop' to the official"
-			elog "'com.anthropic.Claude' (.desktop file, WM_CLASS/Wayland app_id):"
-			elog "  - re-pin any taskbar/dock shortcut once"
-			elog "  - update custom WM rules matching 'claude-desktop'"
-			elog "  - KDE screen-share/Computer Use consent is asked once more,"
-			elog "    then persists (portal grants are keyed to the app id)"
-			break
-		fi
-	done
+	# Installed paths are identical to app-misc/claude-desktop-patrickjaja,
+	# so a switch needs nothing beyond unmerging that package.
+	if [[ -z ${REPLACING_VERSIONS} ]]; then
+		elog "Upstream renamed the project to claude-desktop-extra; this package"
+		elog "supersedes app-misc/claude-desktop-patrickjaja. Installed paths and"
+		elog "the app identity are unchanged, so shortcuts and portal grants stay"
+		elog "valid. On first launch the app migrates the user config"
+		elog "~/.config/Claude/claude-desktop-bin.jsonc (themes, feature-flag"
+		elog "overrides) to claude-desktop-extra.jsonc, keeping the old file as a"
+		elog "backup -- nothing to do by hand."
+	fi
 
 	elog "Computer Use is served by bundled first-party bridges on X11,"
 	elog "wlroots compositors (Sway/Hyprland/Niri), GNOME Wayland and KDE"
@@ -142,6 +149,12 @@ pkg_postinst() {
 		elog "ydotool is only used on exotic Wayland compositors without a"
 		elog "bundled bridge; there, ensure the ydotoold daemon is running."
 	fi
+
+	# The in-app Hardware Buddy (Nibblet) BLE scan works on Linux since
+	# v1.22209.3-4, which armed the BLE transport at the feature-store
+	# level and enabled Chromium's Web Bluetooth Blink feature in the
+	# launcher; it needs a running bluetoothd (upstream Suggests).
+	optfeature "Hardware Buddy (Nibblet) Bluetooth pairing" net-wireless/bluez
 }
 
 pkg_postrm() {

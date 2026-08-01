@@ -25,6 +25,7 @@ QA_PREBUILT="usr/lib/${MY_PN}/*"
 
 RDEPEND="
 	!app-misc/claude-desktop-aaddrick
+	!app-misc/claude-desktop-extra
 	!app-misc/claude-desktop-patrickjaja
 	claude-code? ( dev-util/claude-code )
 	cowork? (
