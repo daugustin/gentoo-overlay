@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>hossie@hossie.de</email>
+	</maintainer>
+	<upstream>
+		<remote-id type="github">mixpanel/mixpanel-python</remote-id>
+		<remote-id type="pypi">mixpanel</remote-id>
+	</upstream>
+</pkgmetadata>
