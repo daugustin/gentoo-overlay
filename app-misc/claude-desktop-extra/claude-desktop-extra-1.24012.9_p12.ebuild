@@ -13,10 +13,9 @@ MY_PR=$(ver_cut 5)
 MY_PN=claude-desktop
 
 # Upstream renamed the project from claude-desktop-bin to claude-desktop-extra
-# in v1.24012.9-8 (repository, packages and the ~/.config/Claude config file);
-# app-misc/claude-desktop-patrickjaja is its predecessor here. The old GitHub
-# repository is not a redirect -- it was recreated as a transitional mirror --
-# so releases are fetched from the new repository.
+# in v1.24012.9-8 (repository, packages and the ~/.config/Claude config file).
+# The old GitHub repository is not a redirect -- it was recreated as a
+# transitional mirror -- so releases are fetched from the new repository.
 #
 # Upstream repackages Anthropic's official Linux .deb: since v1.20186.1-2 the
 # tarball ships the official usr/lib/claude-desktop tree verbatim (bundled
@@ -55,7 +54,6 @@ QA_PREBUILT="usr/lib/${MY_PN}/*"
 RDEPEND="
 	!app-misc/claude-desktop-aaddrick
 	!app-misc/claude-desktop-official
-	!app-misc/claude-desktop-patrickjaja
 	cowork? (
 		app-emulation/qemu[qemu_softmmu_targets_x86_64]
 		app-emulation/virtiofsd
@@ -130,13 +128,11 @@ pkg_postinst() {
 	xdg_desktop_database_update
 	xdg_icon_cache_update
 
-	# Installed paths are identical to app-misc/claude-desktop-patrickjaja,
-	# so a switch needs nothing beyond unmerging that package.
 	if [[ -z ${REPLACING_VERSIONS} ]]; then
-		elog "Upstream renamed the project to claude-desktop-extra; this package"
-		elog "supersedes app-misc/claude-desktop-patrickjaja. Installed paths and"
-		elog "the app identity are unchanged, so shortcuts and portal grants stay"
-		elog "valid. On first launch the app migrates the user config"
+		elog "Upstream renamed the project from claude-desktop-bin to"
+		elog "claude-desktop-extra. Installed paths and the app identity are"
+		elog "unchanged, so shortcuts and portal grants stay valid. On first"
+		elog "launch the app migrates the user config"
 		elog "~/.config/Claude/claude-desktop-bin.jsonc (themes, feature-flag"
 		elog "overrides) to claude-desktop-extra.jsonc, keeping the old file as a"
 		elog "backup -- nothing to do by hand."

@@ -24,7 +24,6 @@ BDEPEND="app-arch/zstd"
 RDEPEND="
 	!app-misc/claude-desktop-extra
 	!app-misc/claude-desktop-official
-	!app-misc/claude-desktop-patrickjaja
 "
 
 S="${WORKDIR}"
