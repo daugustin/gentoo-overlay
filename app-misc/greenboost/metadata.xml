@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<longdescription lang="en">
+		GreenBoost is a kernel module plus an LD_PRELOAD CUDA shim that presents
+		a tiered memory pool to CUDA clients: physical VRAM (T1), pinned system
+		RAM mapped over PCIe (T2), and an optional NVMe-backed tier (T3). It is
+		aimed at running larger models than the card's VRAM would normally
+		allow, and ships a network feeder daemon, udev tuning and an optional
+		eBPF tracer for the migration paths.
+	</longdescription>
+	<use>
+		<flag name="bpf">Build the optional eBPF tracer for tier migration events (needs a kernel with CONFIG_DEBUG_INFO_BTF)</flag>
+	</use>
+	<upstream>
+		<remote-id type="gitlab">IsolatedOctopi/greenboost</remote-id>
+	</upstream>
+</pkgmetadata>
