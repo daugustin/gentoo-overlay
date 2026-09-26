@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>hossie@hossie.de</email>
+		<name>Daniel Augustin</name>
+	</maintainer>
+	<longdescription>
+		libassert is a C++ assertion library that prints the values of the
+		operands, a stack trace (via dev-cpp/cpptrace) and syntax
+		highlighting when an assertion fails.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">jeremy-rifkin/libassert</remote-id>
+	</upstream>
+</pkgmetadata>
