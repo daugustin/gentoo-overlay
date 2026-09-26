@@ -1,0 +1,161 @@
+Build against Gentoo's system libraries instead of the upstream deps tree.
+
+- Tracy: only the headers are needed with SLIC3R_ENABLE_PROFILING=OFF.
+- wxGTK is built with autotools and ships no CMake config, use wx-config.
+- Gentoo's zstd has no CMake config; a shared blosc does not need it.
+- app-arch/libdeflate is only built as a shared library (libdeflate_shared).
+- webkit2gtk-4.0 (libsoup2) must not be mixed with wxGTK's webkit2gtk-4.1.
+- prusa-fdm-mixer is built from bundled_deps/ (unpacked by the ebuild).
+- nlohmann_json 3.12.0 is used from bundled_deps/ with the std::optional fix
+  and implicit conversions disabled, like upstream deps/+json. libslic3r
+  includes it too but did not link the target.
+- The glfw and SDL2 imgui backends are not linked by anything on Linux.
+
+diff --git a/bundled_deps/CMakeLists.txt b/bundled_deps/CMakeLists.txt
+index de8003c..6d6b7ee 100644
+--- a/bundled_deps/CMakeLists.txt
++++ b/bundled_deps/CMakeLists.txt
+@@ -10,6 +10,16 @@ add_subdirectory(hints)
+ add_subdirectory(libnest2d)
+ add_subdirectory(clipper)
+ 
++add_library(prusa_fdm_mixer STATIC prusa_fdm_mixer/prusa_fdm_mixer/prusa_fdm_mixer.cpp)
++add_library(prusa_fdm_mixer::prusa_fdm_mixer ALIAS prusa_fdm_mixer)
++target_include_directories(prusa_fdm_mixer PUBLIC prusa_fdm_mixer)
++
++# nlohmann_json 3.12.0 with the std::optional fix, configured like upstream deps/+json
++set(JSON_BuildTests OFF)
++set(JSON_ImplicitConversions OFF)
++set(JSON_Install OFF)
++add_subdirectory(nlohmann_json EXCLUDE_FROM_ALL)
++
+ add_library(semver STATIC
+     semver/semver.c
+     semver/semver.h
+diff --git a/bundled_deps/imgui/CMakeLists.txt b/bundled_deps/imgui/CMakeLists.txt
+index b74eedb..3b5e2ca 100644
+--- a/bundled_deps/imgui/CMakeLists.txt
++++ b/bundled_deps/imgui/CMakeLists.txt
+@@ -23,6 +23,8 @@ target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+ message(STATUS "Imgui include dir: ${CMAKE_CURRENT_SOURCE_DIR}")
+ 
+ 
++# Gentoo: the glfw and SDL2 backends are not linked by any target on Linux
++if (NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
+ add_library(imgui_backend_ogl3_glfw STATIC
+         imgui/backends/imgui_impl_glfw.h
+         imgui/backends/imgui_impl_glfw.cpp
+@@ -72,6 +74,7 @@ target_link_libraries(
+ if (APPLE)
+     target_link_libraries(imgui_backend_ogl3_sdl2 PUBLIC "-framework Cocoa" "-framework IOKit")
+ endif ()
++endif ()
+ 
+ add_library(imgui_backend_ogl3 STATIC
+         imgui/backends/imgui_impl_opengl3.h
+diff --git a/cmake/modules/FindBlosc.cmake b/cmake/modules/FindBlosc.cmake
+index 1c59ddd..44341a1 100644
+--- a/cmake/modules/FindBlosc.cmake
++++ b/cmake/modules/FindBlosc.cmake
+@@ -349,8 +349,11 @@ get_filename_component(Blosc_LIBRARY_DIRS ${Blosc_LIBRARY_RELEASE} DIRECTORY)
+ 
+ if(NOT TARGET Blosc::blosc)
+   add_library(Blosc::blosc ${BLOSC_LIB_TYPE} IMPORTED)
+-  find_package(zstd REQUIRED)
+-  target_link_libraries(Blosc::blosc INTERFACE zstd::libzstd)
++  # A shared libblosc already links zstd itself
++  if(BLOSC_LIB_TYPE STREQUAL "STATIC")
++    find_package(zstd REQUIRED)
++    target_link_libraries(Blosc::blosc INTERFACE zstd::libzstd)
++  endif()
+   set_target_properties(Blosc::blosc PROPERTIES
+     INTERFACE_COMPILE_OPTIONS "${PC_Blosc_CFLAGS_OTHER}"
+     INTERFACE_INCLUDE_DIRECTORIES "${Blosc_INCLUDE_DIRS}")
+diff --git a/cmake/modules/GlobalDependencies.cmake b/cmake/modules/GlobalDependencies.cmake
+index c9f1cbe..5d17548 100644
+--- a/cmake/modules/GlobalDependencies.cmake
++++ b/cmake/modules/GlobalDependencies.cmake
+@@ -70,4 +70,11 @@ endif()
+ find_package(fmt REQUIRED)
+ slic3r_remap_configs(fmt::fmt RelWithDebInfo Release)
+ 
+-find_package(Tracy REQUIRED)
++if (SLIC3R_ENABLE_PROFILING)
++    find_package(Tracy REQUIRED)
++else ()
++    # Only the (no-op) headers are needed when profiling is disabled.
++    find_path(TRACY_INCLUDE_DIR tracy/Tracy.hpp REQUIRED)
++    add_library(Tracy::TracyClient INTERFACE IMPORTED GLOBAL)
++    target_include_directories(Tracy::TracyClient INTERFACE ${TRACY_INCLUDE_DIR})
++endif ()
+diff --git a/src/libslic3r/CMakeLists.txt b/src/libslic3r/CMakeLists.txt
+index edb8f29..b9ce5fc 100644
+--- a/src/libslic3r/CMakeLists.txt
++++ b/src/libslic3r/CMakeLists.txt
+@@ -453,6 +453,7 @@ find_package(JPEG REQUIRED)
+ 
+ target_link_libraries(libslic3r PRIVATE
+     libexpat
++    nlohmann_json::nlohmann_json
+     qhull
+     TBB::tbb
+     TBB::tbbmalloc
+diff --git a/src/slic3r-biz-algorithms/CMakeLists.txt b/src/slic3r-biz-algorithms/CMakeLists.txt
+index f0ddbf6..37cfd5d 100644
+--- a/src/slic3r-biz-algorithms/CMakeLists.txt
++++ b/src/slic3r-biz-algorithms/CMakeLists.txt
+@@ -115,7 +115,6 @@ else()
+     target_link_libraries(qhull INTERFACE Qhull::qhullcpp Qhull::qhull_r)
+ endif()
+ 
+-find_package(prusa_fdm_mixer CONFIG REQUIRED)
+ slic3r_remap_configs(prusa_fdm_mixer::prusa_fdm_mixer RelWithDebInfo Release)
+ 
+ target_link_libraries(slic3r-biz-algorithms PRIVATE localesutils glu-libtess qhull prusa_fdm_mixer::prusa_fdm_mixer)
+diff --git a/src/slic3r-platform-wx/CMakeLists.txt b/src/slic3r-platform-wx/CMakeLists.txt
+index 38e7b6a..1d9a987 100644
+--- a/src/slic3r-platform-wx/CMakeLists.txt
++++ b/src/slic3r-platform-wx/CMakeLists.txt
+@@ -27,7 +27,7 @@ set(WX_COMPONENTS base core adv html gl)
+ if(SLIC3R_ENABLE_WEBKIT)
+     list(APPEND WX_COMPONENTS webview)
+ endif()
+-find_package(wxWidgets 3.3 CONFIG REQUIRED COMPONENTS ${WX_COMPONENTS})
++find_package(wxWidgets 3.3 REQUIRED COMPONENTS ${WX_COMPONENTS})
+ 
+ slic3r_remap_configs(wx::wxhtml wx::wxadv wx::wxgl wx::wxcore wx::wxbase RelWithDebInfo Release)
+ 
+diff --git a/src/slic3r-shared-wx/CMakeLists.txt b/src/slic3r-shared-wx/CMakeLists.txt
+index 3c1682f..b0522ce 100644
+--- a/src/slic3r-shared-wx/CMakeLists.txt
++++ b/src/slic3r-shared-wx/CMakeLists.txt
+@@ -165,7 +165,7 @@ if (UNIX AND NOT APPLE)
+ 
+     set(WEBKIT_LINK_LIBS "")
+     if (SLIC3R_ENABLE_WEBKIT)
+-        pkg_search_module(WEBKIT2GTK REQUIRED IMPORTED_TARGET webkit2gtk-4.0 webkit2gtk-4.1)
++        pkg_search_module(WEBKIT2GTK REQUIRED IMPORTED_TARGET webkit2gtk-4.1)
+         set(WEBKIT_LINK_LIBS PkgConfig::WEBKIT2GTK)
+     endif()
+ 
+diff --git a/src/slic3r-shared/CMakeLists.txt b/src/slic3r-shared/CMakeLists.txt
+index 9af790d..f32d112 100644
+--- a/src/slic3r-shared/CMakeLists.txt
++++ b/src/slic3r-shared/CMakeLists.txt
+@@ -1342,7 +1342,6 @@ endif()
+ 
+ find_package(NanoSVG REQUIRED)
+ find_package(yoga CONFIG REQUIRED)
+-find_package(nlohmann_json 3.11 REQUIRED)
+ find_package(EXPAT CONFIG REQUIRED)
+ find_package(pugixml CONFIG REQUIRED)
+ 
+@@ -1428,7 +1427,7 @@ target_link_libraries(slic3r-shared PUBLIC
+         pugixml::pugixml
+         range-v3::range-v3
+         libcereal
+-        libdeflate::libdeflate_static
++        libdeflate::libdeflate_shared
+ )
+ target_compile_definitions(slic3r-shared PUBLIC ${SLIC3R_YAML_DEFINE} ${USE_NATIVE_MENU_DEFINE})
+ if (SLIC3R_SENTRY_DSN)

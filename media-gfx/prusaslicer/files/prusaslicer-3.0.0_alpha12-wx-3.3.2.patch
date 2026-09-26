@@ -1,0 +1,19 @@
+Fix building with wxWidgets >= 3.3.2 (upstream pins 3.3.1).
+
+wx 3.3.2 added a deleted wxColour(bool) constructor, so a StateColor* in a
+braced list now also converts to StateColor (pointer -> bool -> wxColour)
+and attach({&color}) became ambiguous. Pass the vector explicitly.
+
+diff --git a/src/slic3r-shared-wx/src/Slic3r/App/WX/Widgets/Button.cpp b/src/slic3r-shared-wx/src/Slic3r/App/WX/Widgets/Button.cpp
+index 25463dd..c57a7d1 100644
+--- a/src/slic3r-shared-wx/src/Slic3r/App/WX/Widgets/Button.cpp
++++ b/src/slic3r-shared-wx/src/Slic3r/App/WX/Widgets/Button.cpp
+@@ -49,7 +49,7 @@ Button::Button(wxWindow* parent, wxString text, wxString icon, long style, wxSiz
+ bool Button::Create(wxWindow* parent, wxString text, wxString icon, long style, wxSize iconSize/* = wxSize(16, 16)*/)
+ {
+     StaticBox::Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, style);
+-    state_handler.attach({&text_color});
++    state_handler.attach(std::vector<StateColor const *>{&text_color});
+     state_handler.update_binds();
+     wxWindow::SetLabel(text);
+     if (!icon.IsEmpty()) {

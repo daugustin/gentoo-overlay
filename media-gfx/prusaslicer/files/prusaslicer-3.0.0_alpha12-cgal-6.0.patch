@@ -1,0 +1,114 @@
+Fix building with CGAL 6: Surface_mesh::property_map() returns a
+std::optional instead of a std::pair, and AABB_traits.h is no longer
+included transitively.
+
+Rebased for 3.0 from the ::gentoo cgal-6.0 patch.
+
+diff --git a/src/slic3r-biz-cgal-algorithms/src/Slic3r/Biz/CGAL/Algorithms/CutSurface.cpp b/src/slic3r-biz-cgal-algorithms/src/Slic3r/Biz/CGAL/Algorithms/CutSurface.cpp
+index c689101..406e8fd 100644
+--- a/src/slic3r-biz-cgal-algorithms/src/Slic3r/Biz/CGAL/Algorithms/CutSurface.cpp
++++ b/src/slic3r-biz-cgal-algorithms/src/Slic3r/Biz/CGAL/Algorithms/CutSurface.cpp
+@@ -30,6 +30,7 @@ using namespace Slic3r;
+ #include <CGAL/Surface_mesh.h>
+ #include <CGAL/Cartesian_converter.h>
+ #include <CGAL/Polygon_mesh_processing/clip.h>
++#include <CGAL/AABB_traits.h>
+ #include <oneapi/tbb/blocked_range.h>
+ #include <oneapi/tbb/parallel_for.h>
+ #include <boost/property_map/property_map.hpp>
+@@ -85,6 +86,10 @@ using Biz::Algorithms::ClipperUtils::union_ex;
+ using Biz::Algorithms::ExPolygon::count_points;
+ using Domain::coord_t;
+ 
++// CGAL 6 returns std::optional from Surface_mesh::property_map(), older versions a std::pair.
++template<typename T> auto access_pmap(std::optional<T> opt) -> T { return opt.value(); }
++template<typename Pair> auto access_pmap(Pair pair) { return pair.first; }
++
+ namespace priv {
+ 
+ using Project   = Slic3r::Biz::Algorithms::IProjection;
+@@ -1651,9 +1656,9 @@ priv::CutAOIs priv::cut_from_model(
+     bool is_valid = true;
+     // NOTE: map are created when convert shapes to cgal model
+     const EdgeShapeMap&
+-        edge_shape_map = cgal_shape.property_map<EI, IntersectingElement>(edge_shape_map_name).first;
++        edge_shape_map = access_pmap(cgal_shape.property_map<EI, IntersectingElement>(edge_shape_map_name));
+     const FaceShapeMap&
+-        face_shape_map = cgal_shape.property_map<FI, IntersectingElement>(face_shape_map_name).first;
++        face_shape_map = access_pmap(cgal_shape.property_map<FI, IntersectingElement>(face_shape_map_name));
+     Visitor visitor{cgal_model, cgal_shape, edge_shape_map, face_shape_map, vert_shape_map, &is_valid};
+ 
+     // a property map containing the constrained-or-not status of each edge
+@@ -1818,11 +1823,10 @@ void priv::collect_surface_data(
+ 
+ void priv::create_reduce_map(ReductionMap& reduction_map, const CutMesh& mesh)
+ {
+-    const VertexShapeMap& vert_shape_map = mesh.property_map<VI, const IntersectingElement*>(
++    const VertexShapeMap& vert_shape_map = access_pmap(mesh.property_map<VI, const IntersectingElement*>(
+                                                    vert_shape_map_name
+-    )
+-                                               .first;
+-    const EdgeBoolMap& ecm = mesh.property_map<EI, bool>(is_constrained_edge_name).first;
++    ));
++    const EdgeBoolMap& ecm = access_pmap(mesh.property_map<EI, bool>(is_constrained_edge_name));
+ 
+     // check if vertex was made by edge_2 which is diagonal of quad
+     auto is_reducible_vertex = [&vert_shape_map](VI reduction_from) -> bool {
+@@ -2010,14 +2014,13 @@ priv::VDistances priv::calc_distances(
+     priv::VDistances result(count_shapes_points);
+     for (const SurfacePatch& patch : patches) {
+         // map is created during intersection by corefine visitor
+-        const VertexShapeMap& vert_shape_map = models[patch.model_id]
++        const VertexShapeMap& vert_shape_map = access_pmap(models[patch.model_id]
+                                                    .property_map<VI, const IntersectingElement*>(
+                                                        vert_shape_map_name
+-                                                   )
+-                                                   .first;
++                                                   ));
+         uint32_t patch_index = &patch - &patches.front();
+         // map is created during patch creation / dividing
+-        const CvtVI2VI& cvt = patch.mesh.property_map<VI, VI>(patch_source_name).first;
++        const CvtVI2VI& cvt = access_pmap(patch.mesh.property_map<VI, VI>(patch_source_name));
+         // for each point on outline
+         for (const Loop& loop : patch.loops)
+             for (const VI& vi_patch : loop) {
+@@ -3297,7 +3300,7 @@ uint32_t priv::get_shape_point_index(const CutAOI& cut, const CutMesh& model)
+ {
+     // map is created during intersection by corefine visitor
+     const VertexShapeMap&
+-        vert_shape_map = model.property_map<VI, const IntersectingElement*>(vert_shape_map_name).first;
++        vert_shape_map = access_pmap(model.property_map<VI, const IntersectingElement*>(vert_shape_map_name));
+     // for each half edge of outline
+     for (HI hi : cut.second) {
+         VI vi                         = model.source(hi);
+@@ -3325,7 +3328,7 @@ priv::SurfacePatch priv::separate_patch(
+     patch_new.model_id     = patch.model_id;
+     patch_new.shape_id     = patch.shape_id;
+     // fix cvt
+-    CvtVI2VI cvt = patch_new.mesh.property_map<VI, VI>(patch_source_name).first;
++    CvtVI2VI cvt = access_pmap(patch_new.mesh.property_map<VI, VI>(patch_source_name));
+     for (VI& vi : cvt) {
+         if (!vi.is_valid())
+             continue;
+@@ -3347,7 +3350,7 @@ void priv::divide_patch(size_t i, SurfacePatchesEx& patches)
+     CutMesh::Property_map<FI, bool>
+         is_processed = cm.add_property_map<FI, bool>(patch_number_name, false).first;
+ 
+-    const CvtVI2VI& cvt_from = patch.mesh.property_map<VI, VI>(patch_source_name).first;
++    const CvtVI2VI& cvt_from = access_pmap(patch.mesh.property_map<VI, VI>(patch_source_name));
+ 
+     std::vector<FI> fis;
+     fis.reserve(cm.faces().size());
+@@ -3549,10 +3552,9 @@ bool priv::is_over_whole_expoly(
+ bool priv::is_over_whole_expoly(const CutAOI& cutAOI, const ExPolygon& shape, const CutMesh& mesh)
+ {
+     // NonInterupted contour is without other point and contain all from shape
+-    const VertexShapeMap& vert_shape_map = mesh.property_map<VI, const IntersectingElement*>(
++    const VertexShapeMap& vert_shape_map = access_pmap(mesh.property_map<VI, const IntersectingElement*>(
+                                                    vert_shape_map_name
+-    )
+-                                               .first;
++    ));
+     for (HI hi : cutAOI.second) {
+         const IntersectingElement* ie_s = vert_shape_map[mesh.source(hi)];
+         const IntersectingElement* ie_t = vert_shape_map[mesh.target(hi)];
