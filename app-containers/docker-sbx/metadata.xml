@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>hossie@hossie.de</email>
+		<name>Daniel Augustin</name>
+	</maintainer>
+	<use>
+		<flag name="apparmor">Install the AppArmor profile that lets the nerdbox shim create user namespaces</flag>
+	</use>
+	<upstream>
+		<doc>https://docs.docker.com/ai/sandboxes/</doc>
+		<remote-id type="github">docker/sbx-releases</remote-id>
+	</upstream>
+	<longdescription>
+		Docker Sandboxes (sbx) runs AI coding agents such as Claude Code,
+		Codex or Gemini CLI inside isolated KVM microVM sandboxes with their
+		own container runtime, network policy and credential proxy.
+	</longdescription>
+</pkgmetadata>
