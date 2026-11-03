@@ -1,0 +1,87 @@
+diff --color -Naur a/src/basegui.cpp b/src/basegui.cpp
+--- a/src/basegui.cpp
++++ b/src/basegui.cpp
+@@ -957,9 +957,11 @@
+ 	connect( showConfigAct, SIGNAL(triggered()),
+              this, SLOT(helpShowConfig()) );
+ 
++#ifdef DONATE_REMINDER
+ 	donateAct = new MyAction( this, "donate" );
+ 	connect( donateAct, SIGNAL(triggered()),
+              this, SLOT(helpDonate()) );
++#endif
+ 
+ 	aboutThisAct = new MyAction( this, "about_smplayer" );
+ 	aboutThisAct->setMenuRole(QAction::AboutRole);
+@@ -1936,8 +1938,10 @@
+ #ifdef SHARE_ACTIONS
+ 	donateAct->change( Images::icon("donate"), tr("&Donate / Share with your friends") );
+ #else
++#ifdef DONATE_REMINDER
+ 	donateAct->change( Images::icon("donate"), tr("&Donate") );
+ #endif
++#endif
+ 	aboutThisAct->change( Images::icon("logo"), tr("About &SMPlayer") );
+ 
+ #ifdef SHARE_MENU
+@@ -3102,8 +3106,10 @@
+ 		helpMenu->addAction(showConfigAct);
+ 		helpMenu->addSeparator();
+ 	}
++	#ifdef DONATE_REMINDER
+ 	helpMenu->addAction(donateAct);
+ 	helpMenu->addSeparator();
++	#endif
+ 	helpMenu->addAction(aboutThisAct);
+ 
+ 	// Access menu
+@@ -4631,6 +4637,7 @@
+ 	}
+ }
+ #else
++#ifdef DONATE_REMINDER
+ void BaseGui::helpDonate() {
+ 	qDebug("BaseGui::helpDonate");
+ 
+@@ -4682,6 +4689,7 @@
+ 	if (accepted != 0) *accepted = result;
+ }
+ #endif
++#endif
+ 
+ void BaseGui::helpAbout() {
+ 	About d(this);
+diff --color -Naur a/src/basegui.h b/src/basegui.h
+--- a/src/basegui.h
++++ b/src/basegui.h
+@@ -82,10 +82,6 @@
+ class ShareWidget;
+ #endif
+ 
+-#ifndef SHARE_WIDGET
+-#define DONATE_REMINDER
+-#endif
+-
+ class BaseGui : public QMainWindow
+ {
+ 	Q_OBJECT
+@@ -138,8 +134,8 @@
+ 	virtual void helpFAQ();
+ 	virtual void helpCLOptions();
+ 	virtual void helpCheckUpdates();
++#ifdef DONATE_REMINDER
+ 	virtual void helpDonate();
+-#ifndef SHARE_ACTIONS
+ 	void showHelpDonateDialog(bool * accepted = 0);
+ #endif
+ 	virtual void helpShowConfig();
+@@ -596,7 +592,9 @@
+ 	MyAction * updateYTAct;
+ #endif
+ 	MyAction * showConfigAct;
++#ifdef DONATE_REMINDER
+ 	MyAction * donateAct;
++#endif
+ 	MyAction * aboutThisAct;
+ 
+ #ifdef SHARE_MENU
