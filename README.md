@@ -10,18 +10,6 @@ So you can just run:
 
     eselect repository enable hossie
 
-
-What is in the overlay?
------------------------
-
-[Details of the available ebuilds](https://wiki.hossie.de/projekte:gentoo-overlay)
-
-
-Bug Tracker
------------
-
-Bugs are on GitHub now.
-
 Repo QA
 -------
 
