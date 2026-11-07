@@ -14,6 +14,7 @@
 		PrusaSlicer is based on Slic3r by Alessandro Ranellucci and the RepRap community.
 	</longdescription>
 	<use>
+		<flag name="spacenav">Read 3D mice through the spacenavd daemon via <pkg>dev-libs/libspnav</pkg>; without it they are read directly through <pkg>dev-libs/hidapi</pkg></flag>
 		<flag name="webkit">Enable the embedded web views (Prusa Connect, Printables, Prusa Account login) via <pkg>net-libs/webkit-gtk</pkg></flag>
 	</use>
 	<upstream>
