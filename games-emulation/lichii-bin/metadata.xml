@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>hossie@hossie.de</email>
+		<name>Daniel Augustin</name>
+	</maintainer>
+	<longdescription>
+		Lichii is a very experimental Nintendo Switch 2 emulator based on
+		Eden, a yuzu descendant. This package repackages the upstream Linux
+		AppDir tarball, which bundles Qt6, FFmpeg and most other libraries,
+		into /opt/lichii.
+	</longdescription>
+	<use>
+		<flag name="pgo">Install the upstream build optimized with Profile Guided Optimization (profile trained on Ocarina of Time) instead of the regular build</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">zortos293/Lichii</remote-id>
+		<bugs-to>https://github.com/zortos293/Lichii/issues</bugs-to>
+	</upstream>
+</pkgmetadata>
