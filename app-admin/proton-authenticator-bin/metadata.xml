@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>hossie@hossie.de</email>
+		<name>Daniel Augustin</name>
+	</maintainer>
+	<longdescription>
+		Proton Authenticator is a TOTP two-factor authentication app with
+		optional end-to-end encrypted sync via a Proton account. This package
+		repackages the official upstream x86_64 RPM (a Tauri application
+		using webkit-gtk).
+	</longdescription>
+</pkgmetadata>
